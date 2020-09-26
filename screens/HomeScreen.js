@@ -1,87 +1,70 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import {
   View,
-  Text,
   Button,
   TextInput,
+  Text,
   StyleSheet,
   FlatList,
-} from 'react-native';
+} from 'react-native'
 
-import db from '../db';
+import * as budgetsActions from '../store/actions/budgets'
 
 const HomeScreen = ({ navigation }) => {
+  const [isLoading, setIsLoading] = useState(false)
+  const dispatch = useDispatch()
+
+  const budgets = useSelector((state) => state.budgets.budgets)
+  useEffect(() => {
+    setIsLoading(true)
+    dispatch(budgetsActions.fetchBudgets()).then(() => {
+      setIsLoading(false)
+      console.log('fetchings')
+    })
+  }, [dispatch])
+
   const [budget, setEnteredBudget] = useState({
     name: '',
     amount: 0,
-  });
-  const [allBudgets, updateAllBudget] = useState([]);
+  })
 
   const updateField = (e, name) => {
-    console.log(e.nativeEvent.text);
     setEnteredBudget({
       ...budget,
       [name]:
         name === 'name' ? e.nativeEvent.text : parseFloat(e.nativeEvent.text),
-    });
-  };
+    })
+  }
 
   const addBudgetHandler = async () => {
-    updateAllBudget((allBudgets) => [
-      ...allBudgets,
-      {
-        id: Math.random().toString(),
-        name: budget.name,
-        amount: budget.amount,
-      },
-    ]);
-
-    const props = {
-      name: budget.name,
-      amount: budget.amount,
-    };
-
-    let newBudget = new db.Budget(props);
-    await newBudget.save();
-
-    navigation.navigate('BudgetDetail', {
-      name: budget.name,
-      amount: budget.amount,
-    });
+    await dispatch(budgetsActions.addBudget(budget.name, budget.amount))
 
     setEnteredBudget({
       name: '',
       amount: 0,
-    });
-  };
+    })
 
-  useEffect(() => {
-    async function fetchBudgets() {
-      const budgets = await db.Budget.query();
-      updateAllBudget(budgets);
-    }
-    fetchBudgets();
-  }, []);
+    navigation.navigate('BudgetDetail', {
+      mode: 'new',
+    })
+  }
 
   return (
     <View style={styles.container}>
       <FlatList
         style={styles.fList}
+        data={budgets}
         keyExtractor={(item, index) => item.id.toString()}
-        data={allBudgets}
         renderItem={(itemData) => (
           <View style={styles.listItem}>
             <View style={styles.inputWrap}>
-              <TextInput
-                style={styles.listContentLeft}
-                value={itemData.item.name}
-              />
+              <Text style={styles.listContentLeft}>{itemData.item.name}</Text>
             </View>
             <View style={styles.inputWrap}>
-              <TextInput
-                style={styles.listContentRight}
-                value={String(itemData.item.amount)}
-              />
+              <Text style={styles.listContentRight}>
+                {itemData.item.amount.toString()}
+              </Text>
             </View>
           </View>
         )}
@@ -98,16 +81,17 @@ const HomeScreen = ({ navigation }) => {
           placeholder='Amount'
           name='amount'
           style={styles.input}
+          keyboardType='numeric'
           onChange={(e) => updateField(e, 'amount')}
           value={String(budget.amount)}
         />
         <Button title='ADD' onPress={addBudgetHandler} />
       </View>
     </View>
-  );
-};
+  )
+}
 
-export default HomeScreen;
+export default HomeScreen
 
 const styles = StyleSheet.create({
   container: {
@@ -148,4 +132,4 @@ const styles = StyleSheet.create({
   listContentRight: {
     flex: 1,
   },
-});
+})

@@ -1,21 +1,22 @@
-import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import React from 'react'
+import { View, Text, Button, StyleSheet } from 'react-native'
 
 const BudgetDetailScreen = ({ route, navigation }) => {
-  const { name, amount } = route.params;
+  const { id, name, amount } = route.params
 
   return (
     <View style={styles.container}>
       <Text> Budget Detail Screen</Text>
 
+      <Text>id: {id}</Text>
       <Text>name: {JSON.stringify(name)}</Text>
       <Text>amount: {JSON.stringify(amount)}</Text>
       <Button title='Click Here' onPress={() => alert('Button Clicked!')} />
     </View>
-  );
-};
+  )
+}
 
-export default BudgetDetailScreen;
+export default BudgetDetailScreen
 
 const styles = StyleSheet.create({
   container: {
@@ -23,4 +24,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-});
+})
