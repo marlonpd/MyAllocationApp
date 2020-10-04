@@ -4,7 +4,7 @@ import BudgetItem from './BudgetItem'
 export default {
   async initDatabase() {
     // Budget.dropTable();
-    // Budget.dropTable();
+    //BudgetItem.dropTable()
     Budget.createTable()
     BudgetItem.createTable()
     console.log('Table created.....')

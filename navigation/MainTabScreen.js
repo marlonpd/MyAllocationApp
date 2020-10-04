@@ -1,19 +1,19 @@
-import React from 'react';
+import React from 'react'
 
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs'
+import { createStackNavigator } from '@react-navigation/stack'
 
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/Ionicons'
 
-import HomeScreen from '../screens/HomeScreen';
-import BudgetDetailScreen from '../screens/BudgetDetailScreen';
-import DetailsScreen from '../screens/DetailsScreen';
+import HomeScreen from '../screens/HomeScreen'
+import BudgetDetailScreen from '../screens/BudgetDetailScreen'
+import DetailsScreen from '../screens/DetailsScreen'
 //import ExploreScreen from '../screens/ExploreScreen';
 
-const HomeStack = createStackNavigator();
-const DetailsStack = createStackNavigator();
+const HomeStack = createStackNavigator()
+const DetailsStack = createStackNavigator()
 
-const Tab = createMaterialBottomTabNavigator();
+const Tab = createMaterialBottomTabNavigator()
 
 const MainTabScreen = () => (
   <Tab.Navigator initialRouteName='Home' activeColor='#fff'>
@@ -40,9 +40,9 @@ const MainTabScreen = () => (
       }}
     />
   </Tab.Navigator>
-);
+)
 
-export default MainTabScreen;
+export default MainTabScreen
 
 const HomeStackScreen = ({ navigation }) => (
   <HomeStack.Navigator
@@ -67,7 +67,7 @@ const HomeStackScreen = ({ navigation }) => (
             size={25}
             backgroundColor='#009387'
             onPress={() => {
-              navigation.toggleDrawer();
+              navigation.toggleDrawer()
             }}
           ></Icon.Button>
         ),
@@ -76,22 +76,22 @@ const HomeStackScreen = ({ navigation }) => (
     <HomeStack.Screen
       name='BudgetDetail'
       component={BudgetDetailScreen}
-      options={{
-        title: 'Budget Details',
-        headerLeft: () => (
-          <Icon.Button
-            name='ios-menu'
-            size={25}
-            backgroundColor='#009387'
-            onPress={() => {
-              navigation.toggleDrawer();
-            }}
-          ></Icon.Button>
-        ),
-      }}
+      // options={{
+      //   title: 'Budget Details',
+      //   headerLeft: () => (
+      //     <Icon.Button
+      //       name='ios-menu'
+      //       size={25}
+      //       backgroundColor='#009387'
+      //       onPress={() => {
+      //         navigation.toggleDrawer();
+      //       }}
+      //     ></Icon.Button>
+      //   ),
+      // }}
     />
   </HomeStack.Navigator>
-);
+)
 
 const DetailsStackScreen = ({ navigation }) => (
   <DetailsStack.Navigator
@@ -120,4 +120,4 @@ const DetailsStackScreen = ({ navigation }) => (
       }}
     />
   </DetailsStack.Navigator>
-);
+)

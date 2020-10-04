@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+
 import {
   View,
   Button,
@@ -7,6 +8,7 @@ import {
   Text,
   StyleSheet,
   FlatList,
+  TouchableOpacity,
 } from 'react-native'
 
 import * as budgetsActions from '../store/actions/budgets'
@@ -20,7 +22,6 @@ const HomeScreen = ({ navigation }) => {
     setIsLoading(true)
     dispatch(budgetsActions.fetchBudgets()).then(() => {
       setIsLoading(false)
-      console.log('fetchings')
     })
   }, [dispatch])
 
@@ -38,15 +39,27 @@ const HomeScreen = ({ navigation }) => {
   }
 
   const addBudgetHandler = async () => {
-    await dispatch(budgetsActions.addBudget(budget.name, budget.amount))
+    await dispatch(budgetsActions.addBudget(budget.name, budget.amount)).then(
+      (newBudget) => {
+        setEnteredBudget({
+          name: '',
+          amount: 0,
+        })
 
-    setEnteredBudget({
-      name: '',
-      amount: 0,
-    })
+        navigation.navigate('BudgetDetail', {
+          id: newBudget.id,
+          name: newBudget.name,
+          amount: newBudget.amount,
+        })
+      }
+    )
+  }
 
+  const openBudgetHanlder = (item) => {
     navigation.navigate('BudgetDetail', {
-      mode: 'new',
+      id: item.id,
+      name: item.name,
+      amount: item.amount,
     })
   }
 
@@ -58,14 +71,19 @@ const HomeScreen = ({ navigation }) => {
         keyExtractor={(item, index) => item.id.toString()}
         renderItem={(itemData) => (
           <View style={styles.listItem}>
-            <View style={styles.inputWrap}>
-              <Text style={styles.listContentLeft}>{itemData.item.name}</Text>
-            </View>
-            <View style={styles.inputWrap}>
-              <Text style={styles.listContentRight}>
-                {itemData.item.amount.toString()}
-              </Text>
-            </View>
+            <TouchableOpacity
+              style={styles.itemContainer}
+              onPress={() => openBudgetHanlder(itemData.item)}
+            >
+              <View style={styles.inputWrap}>
+                <Text style={styles.listContentLeft}>{itemData.item.name}</Text>
+              </View>
+              <View style={styles.inputWrap}>
+                <Text style={styles.listContentRight}>
+                  {itemData.item.amount.toString()}
+                </Text>
+              </View>
+            </TouchableOpacity>
           </View>
         )}
       />
@@ -114,6 +132,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     height: 50,
+  },
+  itemContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    flex: 1,
   },
   fList: {
     alignSelf: 'stretch',

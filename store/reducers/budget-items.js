@@ -9,7 +9,7 @@ export default (state = initialState, action) => {
   switch (action.type) {
     case SET_BUDGET_ITEMS:
       return {
-        budgets: action.budgets,
+        budgetItems: action.budgetItems,
       }
     case ADD_BUDGET_ITEM:
       const newBudgetItem = new BudgetItem(

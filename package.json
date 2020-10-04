@@ -14,6 +14,7 @@
     "@react-navigation/material-bottom-tabs": "^5.2.16",
     "@react-navigation/native": "^5.0.0",
     "@react-navigation/stack": "^5.0.0",
+    "buffer": "^5.6.0",
     "expo": "^36.0.0",
     "expo-linear-gradient": "~8.0.0",
     "expo-sqlite": "~8.0.0",
@@ -28,13 +29,16 @@
     "react-native-reanimated": "~1.4.0",
     "react-native-safe-area-context": "0.6.0",
     "react-native-screens": "2.0.0-alpha.12",
+    "react-native-uuid": "^1.4.9",
+    "react-native-uuid-generator": "^6.1.1",
     "react-native-web": "^0.11.7",
     "react-navigation": "^3.11.1",
     "react-navigation-header-buttons": "^3.0.1",
     "react-redux": "^7.1.0",
     "realm": "^6.1.1",
     "redux": "^4.0.4",
-    "redux-thunk": "^2.3.0"
+    "redux-thunk": "^2.3.0",
+    "uuid": "^8.3.0"
   },
   "devDependencies": {
     "babel-preset-expo": "^8.0.0",
