@@ -28,14 +28,22 @@ const BudgetDetailScreen = ({ route, navigation }) => {
   const [budgetItem, setEnteredBudgetItem] = useState({
     id: id,
     name: '',
-    amount: 0,
+    amount: '',
   })
 
   const updateField = (e, name) => {
     setEnteredBudgetItem({
       ...budgetItem,
       [name]:
-        name === 'name' ? e.nativeEvent.text : parseFloat(e.nativeEvent.text),
+        name === 'name' ? e.nativeEvent.text : e.nativeEvent.text,
+    })
+  }
+
+  const updateAmountField = (e, name) => {
+    setEnteredBudgetItem({
+      ...budgetItem,
+      [name]:
+        e.nativeEvent.text.replace(/[- #*;,<>\{\}\[\]\\\/]/gi, ''),
     })
   }
 
@@ -45,7 +53,7 @@ const BudgetDetailScreen = ({ route, navigation }) => {
     ).then((newBudgetItem) => {
       setEnteredBudgetItem({
         name: '',
-        amount: 0,
+        amount: '',
       })
     })
   }
@@ -84,7 +92,7 @@ const BudgetDetailScreen = ({ route, navigation }) => {
           name='amount'
           style={styles.input}
           keyboardType='numeric'
-          onChange={(e) => updateField(e, 'amount')}
+          onChange={(e) => updateAmountField(e, 'amount')}
           value={String(budgetItem.amount)}
         />
         <Button title='ADD' onPress={addBudgetItemHandler} />

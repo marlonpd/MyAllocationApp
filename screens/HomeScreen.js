@@ -7,11 +7,52 @@ import {
   TextInput,
   Text,
   StyleSheet,
-  FlatList,
   TouchableOpacity,
 } from 'react-native'
 
+import { FlatList, RectButton } from 'react-native-gesture-handler'
+
+import AppleStyleSwipeableRow from '../components/UI/AppleStyleSwipeableRow'
+
 import * as budgetsActions from '../store/actions/budgets'
+
+const Row = ({ item, navigation }) => {
+  const openBudgetHanlder = (item) => {
+    navigation.navigate('BudgetDetail', {
+      id: item.id,
+      name: item.name,
+      amount: item.amount,
+    })
+  }
+
+  return (
+    <RectButton style={styles.rectButton}>
+      <View style={styles.listItem}>
+        <TouchableOpacity
+          style={styles.itemContainer}
+          onPress={() => openBudgetHanlder(item)}
+        >
+          <View style={styles.inputWrap}>
+            <Text style={styles.listContentLeft}>{item.name}</Text>
+          </View>
+          <View style={styles.inputWrap}>
+            <Text style={styles.listContentRight}>
+              {item.amount.toString()}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+    </RectButton>
+  )
+}
+
+const SwipeableRow = ({ item, index, nav }) => {
+  return (
+    <AppleStyleSwipeableRow>
+      <Row item={item} navigation={nav} />
+    </AppleStyleSwipeableRow>
+  )
+}
 
 const HomeScreen = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -27,7 +68,7 @@ const HomeScreen = ({ navigation }) => {
 
   const [budget, setEnteredBudget] = useState({
     name: '',
-    amount: 0,
+    amount: '',
   })
 
   const updateField = (e, name) => {
@@ -38,12 +79,20 @@ const HomeScreen = ({ navigation }) => {
     })
   }
 
+  const updateAmountField = (e, name) => {
+    console.log(e.nativeEvent.text)
+    setEnteredBudget({
+      ...budget,
+      [name]: e.nativeEvent.text.replace(/[- #*;,<>\{\}\[\]\\\/]/gi, ''),
+    })
+  }
+
   const addBudgetHandler = async () => {
     await dispatch(budgetsActions.addBudget(budget.name, budget.amount)).then(
       (newBudget) => {
         setEnteredBudget({
           name: '',
-          amount: 0,
+          amount: '',
         })
 
         navigation.navigate('BudgetDetail', {
@@ -70,21 +119,11 @@ const HomeScreen = ({ navigation }) => {
         data={budgets}
         keyExtractor={(item, index) => item.id.toString()}
         renderItem={(itemData) => (
-          <View style={styles.listItem}>
-            <TouchableOpacity
-              style={styles.itemContainer}
-              onPress={() => openBudgetHanlder(itemData.item)}
-            >
-              <View style={styles.inputWrap}>
-                <Text style={styles.listContentLeft}>{itemData.item.name}</Text>
-              </View>
-              <View style={styles.inputWrap}>
-                <Text style={styles.listContentRight}>
-                  {itemData.item.amount.toString()}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          </View>
+          <SwipeableRow
+            item={itemData.item}
+            index={itemData.item.id.toString()}
+            nav={navigation}
+          />
         )}
       />
       <View style={styles.inputContainer}>
@@ -100,7 +139,7 @@ const HomeScreen = ({ navigation }) => {
           name='amount'
           style={styles.input}
           keyboardType='numeric'
-          onChange={(e) => updateField(e, 'amount')}
+          onChange={(e) => updateAmountField(e, 'amount')}
           value={String(budget.amount)}
         />
         <Button title='ADD' onPress={addBudgetHandler} />
@@ -154,5 +193,34 @@ const styles = StyleSheet.create({
   },
   listContentRight: {
     flex: 1,
+  },
+  rectButton: {
+    flex: 1,
+    height: 80,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    justifyContent: 'space-between',
+    flexDirection: 'column',
+    backgroundColor: 'white',
+  },
+  separator: {
+    backgroundColor: 'rgb(200, 199, 204)',
+    height: StyleSheet.hairlineWidth,
+  },
+  fromText: {
+    fontWeight: 'bold',
+    backgroundColor: 'transparent',
+  },
+  messageText: {
+    color: '#999',
+    backgroundColor: 'transparent',
+  },
+  dateText: {
+    backgroundColor: 'transparent',
+    position: 'absolute',
+    right: 20,
+    top: 10,
+    color: '#999',
+    fontWeight: 'bold',
   },
 })
