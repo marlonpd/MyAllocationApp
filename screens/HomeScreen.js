@@ -15,14 +15,22 @@ import { FlatList, RectButton } from 'react-native-gesture-handler'
 import AppleStyleSwipeableRow from '../components/UI/AppleStyleSwipeableRow'
 
 import * as budgetsActions from '../store/actions/budgets'
+import * as budgetItemsActions from '../store/actions/budget-items'
 
 const Row = ({ item, navigation }) => {
+  const dispatch = useDispatch()
+  let lastPress = 0
+
   const openBudgetHanlder = (item) => {
     navigation.navigate('BudgetDetail', {
       id: item.id,
       name: item.name,
       amount: item.amount,
     })
+  }
+
+  const editName = (item) => {
+    console.log('edit name')
   }
 
   return (
@@ -47,9 +55,11 @@ const Row = ({ item, navigation }) => {
 }
 
 const SwipeableRow = ({ item, index, nav }) => {
+  const dispatch = useDispatch()
+
   return (
-    <AppleStyleSwipeableRow>
-      <Row item={item} navigation={nav} />
+    <AppleStyleSwipeableRow item={item}>
+      <Row dispatch={dispatch} item={item} sender={'budget'} navigation={nav} />
     </AppleStyleSwipeableRow>
   )
 }
@@ -104,13 +114,13 @@ const HomeScreen = ({ navigation }) => {
     )
   }
 
-  const openBudgetHanlder = (item) => {
-    navigation.navigate('BudgetDetail', {
-      id: item.id,
-      name: item.name,
-      amount: item.amount,
-    })
-  }
+  // const openBudgetHanlder = (item) => {
+  //   navigation.navigate('BudgetDetail', {
+  //     id: item.id,
+  //     name: item.name,
+  //     amount: item.amount,
+  //   })
+  // }
 
   return (
     <View style={styles.container}>

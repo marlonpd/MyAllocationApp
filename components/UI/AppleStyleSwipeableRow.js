@@ -1,11 +1,20 @@
 import React, { Component } from 'react'
 import { Animated, StyleSheet, Text, View, I18nManager } from 'react-native'
-
+import { useSelector, useDispatch } from 'react-redux'
 import { RectButton } from 'react-native-gesture-handler'
 
 import Swipeable from 'react-native-gesture-handler/Swipeable'
+import * as budgetsActions from '../../store/actions/budgets'
+import * as budgetItemsActions from '../../store/actions/budget-items'
 
 export default class AppleStyleSwipeableRow extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      item: props.item,
+    }
+  }
+
   renderLeftActions = (progress, dragX) => {
     const trans = dragX.interpolate({
       inputRange: [0, 50, 100, 101],
@@ -31,15 +40,22 @@ export default class AppleStyleSwipeableRow extends Component {
       inputRange: [0, 1],
       outputRange: [x, 0],
     })
-    const pressHandler = () => {
+
+    const pressHandler = async () => {
       this.close()
-      alert(text)
+      const { dispatch, sender } = this.props.children.props
+
+      if (sender === 'budget')
+        dispatch(await budgetsActions.deleteBudget(this.state.item.id))
+
+      if (sender === 'budgetItem')
+        dispatch(await budgetItemsActions.deleteBudgetItem(this.state.item.id))
     }
     return (
       <Animated.View style={{ flex: 1, transform: [{ translateX: trans }] }}>
         <RectButton
           style={[styles.rightAction, { backgroundColor: color }]}
-          onPress={pressHandler}
+          onPress={() => pressHandler()}
         >
           <Text style={styles.actionText}>{text}</Text>
         </RectButton>
@@ -53,9 +69,8 @@ export default class AppleStyleSwipeableRow extends Component {
         flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
       }}
     >
-      {this.renderRightAction('More', '#C8C7CD', 192, progress)}
-      {this.renderRightAction('Flag', '#ffab00', 128, progress)}
-      {this.renderRightAction('More', '#dd2c00', 64, progress)}
+      {this.renderRightAction('Clone', '#ffab00', 128, progress)}
+      {this.renderRightAction('Delete', '#dd2c00', 64, progress)}
     </View>
   )
   updateRef = (ref) => {
@@ -72,7 +87,7 @@ export default class AppleStyleSwipeableRow extends Component {
         friction={2}
         leftThreshold={30}
         rightThreshold={40}
-        renderLeftActions={this.renderLeftActions}
+        //  renderLeftActions={this.renderLeftActions}
         renderRightActions={this.renderRightActions}
       >
         {children}

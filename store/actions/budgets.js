@@ -2,6 +2,7 @@ import Budget from '../../models/budget'
 import db from '../../db'
 
 export const ADD_BUDGET = 'ADD_BUDGET'
+export const DELETE_BUDGET = 'DELETE_BUDGET'
 export const SET_BUDGETS = 'SET_BUDGETS'
 
 export const fetchBudgets = () => {
@@ -88,31 +89,41 @@ export const addBudget = (name, amount) => {
   }
 }
 
-// export const addBudget = (name, amount) => {
-//   return (dispatch, getState) => {
-//     const token = getState().auth.token
-//     const userId = getState().auth.userId
+export const deleteBudget = (budgetId) => {
+  return async (dispatch, getState) => {
+    try {
+      console.log('budddd')
+      console.log(budgetId)
+      let options1 = {
+        eq: {
+          id: budgetId,
+        },
+      }
+      const budget = await db.Budget.find(budgetId)
+      budget.destroy()
 
-//     let budget = {
-//       userId: userId,
-//       name: name,
-//       amount: amount,
-//     }
+      console.log(budget)
 
-//     let newBudget = new db.Budget(budget)
-//     await newBudget.save()
+      let options = {
+        eq: {
+          budgetId: budgetId,
+        },
+      }
+      //const budgetItems = await db.BudgetItem.destroyMany(budgetId)
+      const deleteBudget = await db.BudgetItem.destroyMany(budgetId)
+      console.log('==BudgetItem=')
+      console.log(deleteBudget)
+      // console.log('delete===BudgetItem= budget')
+      //if (deleteBudget) deleteBudget.destroy()
 
-//     console.log('newBudget')
-//     console.log(newBudget)
+      //Animal.findBy({ age_eq: 12345, color_cont: '%Brown%' })
 
-//     dispatch({
-//       type: ADD_BUDGET,
-//       budget: {
-//         id: newBudget.id,
-//         userId: newBudget.userId,
-//         name: newBudget.name,
-//         amount: newBudget.amount,
-//       },
-//     })
-//   }
-// }
+      dispatch({
+        type: DELETE_BUDGET,
+        budget: budget,
+      })
+    } catch (err) {
+      throw err
+    }
+  }
+}

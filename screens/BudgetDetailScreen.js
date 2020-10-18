@@ -6,14 +6,46 @@ import {
   TextInput,
   Text,
   StyleSheet,
-  FlatList,
   TouchableOpacity,
 } from 'react-native'
 
+import { FlatList, RectButton } from 'react-native-gesture-handler'
+
+import AppleStyleSwipeableRow from '../components/UI/AppleStyleSwipeableRow'
+
 import * as budgetItemsActions from '../store/actions/budget-items'
 
+const Row = ({ item }) => {
+  return (
+    <RectButton style={styles.rectButton}>
+      <View style={styles.listItem}>
+        <TouchableOpacity style={styles.itemContainer}>
+          <View style={styles.inputWrap}>
+            <Text style={styles.listContentLeft}>{item.name}</Text>
+          </View>
+          <View style={styles.inputWrap}>
+            <Text style={styles.listContentRight}>
+              {item.amount.toString()}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+    </RectButton>
+  )
+}
+
+const SwipeableRow = ({ item, index, nav }) => {
+  const dispatch = useDispatch()
+
+  return (
+    <AppleStyleSwipeableRow item={item}>
+      <Row dispatch={dispatch} item={item} sender={'budgetItem'} />
+    </AppleStyleSwipeableRow>
+  )
+}
+
 const BudgetDetailScreen = ({ route, navigation }) => {
-  const { id, name, amount } = route.params
+  const { id } = route.params
   const [isLoading, setIsLoading] = useState(false)
   const budgetItems = useSelector((state) => state.budgetItems.budgetItems)
   const dispatch = useDispatch()
@@ -23,6 +55,12 @@ const BudgetDetailScreen = ({ route, navigation }) => {
     dispatch(budgetItemsActions.fetchBudgetItems(id)).then(() => {
       setIsLoading(false)
     })
+
+    return () => {
+      dispatch(budgetItemsActions.resetBudgetItems()).then(() => {
+        setIsLoading(false)
+      })
+    }
   }, [dispatch, id])
 
   const [budgetItem, setEnteredBudgetItem] = useState({
@@ -34,16 +72,14 @@ const BudgetDetailScreen = ({ route, navigation }) => {
   const updateField = (e, name) => {
     setEnteredBudgetItem({
       ...budgetItem,
-      [name]:
-        name === 'name' ? e.nativeEvent.text : e.nativeEvent.text,
+      [name]: name === 'name' ? e.nativeEvent.text : e.nativeEvent.text,
     })
   }
 
   const updateAmountField = (e, name) => {
     setEnteredBudgetItem({
       ...budgetItem,
-      [name]:
-        e.nativeEvent.text.replace(/[- #*;,<>\{\}\[\]\\\/]/gi, ''),
+      [name]: e.nativeEvent.text.replace(/[- #*;,<>\{\}\[\]\\\/]/gi, ''),
     })
   }
 
@@ -65,18 +101,23 @@ const BudgetDetailScreen = ({ route, navigation }) => {
         data={budgetItems}
         keyExtractor={(item, index) => item.id.toString()}
         renderItem={(itemData) => (
-          <View style={styles.listItem}>
-            <TouchableOpacity style={styles.itemContainer}>
-              <View style={styles.inputWrap}>
-                <Text style={styles.listContentLeft}>{itemData.item.name}</Text>
-              </View>
-              <View style={styles.inputWrap}>
-                <Text style={styles.listContentRight}>
-                  {itemData.item.amount}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          </View>
+          <SwipeableRow
+            item={itemData.item}
+            index={itemData.item.id.toString()}
+            nav={navigation}
+          />
+          // <View style={styles.listItem}>
+          //   <TouchableOpacity style={styles.itemContainer}>
+          //     <View style={styles.inputWrap}>
+          //       <Text style={styles.listContentLeft}>{itemData.item.name}</Text>
+          //     </View>
+          //     <View style={styles.inputWrap}>
+          //       <Text style={styles.listContentRight}>
+          //         {itemData.item.amount}
+          //       </Text>
+          //     </View>
+          //   </TouchableOpacity>
+          // </View>
         )}
       />
       <View style={styles.inputContainer}>

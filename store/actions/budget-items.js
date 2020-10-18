@@ -3,6 +3,8 @@ import db from '../../db'
 
 export const ADD_BUDGET_ITEM = 'ADD_BUDGET_ITEM'
 export const SET_BUDGET_ITEMS = 'SET_BUDGET_ITEMS'
+export const RESET_BUDGET_ITEMS = 'RESET_BUDGET_ITEMS'
+export const DELETE_BUDGET_ITEM = 'DELETE_BUDGET_ITEM'
 
 export const fetchBudgetItems = (budgetId) => {
   return async (dispatch, getState) => {
@@ -25,6 +27,16 @@ export const fetchBudgetItems = (budgetId) => {
         )
       }
       dispatch({ type: SET_BUDGET_ITEMS, budgetItems: loadedBudgetItems })
+    } catch (err) {
+      throw err
+    }
+  }
+}
+
+export const resetBudgetItems = () => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch({ type: RESET_BUDGET_ITEMS, budgetItems: [] })
     } catch (err) {
       throw err
     }
@@ -64,5 +76,21 @@ export const addBudgetItem = (budgetId, name, amount) => {
         reject(err)
       }
     })
+  }
+}
+
+export const deleteBudgetItem = (budgetItemId) => {
+  return async (dispatch, getState) => {
+    try {
+      const budgetItem = await db.BudgetItem.find(budgetItemId)
+      budgetItem.destroy()
+
+      dispatch({
+        type: DELETE_BUDGET_ITEM,
+        budgetItem: budgetItem,
+      })
+    } catch (err) {
+      throw err
+    }
   }
 }
