@@ -9,28 +9,21 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native'
-
 import { FlatList, RectButton } from 'react-native-gesture-handler'
 
 import AppleStyleSwipeableRow from '../components/UI/AppleStyleSwipeableRow'
+import EditBudgetModal from '../components/UI/EditBudgetModal'
 
 import * as budgetsActions from '../store/actions/budgets'
 import * as budgetItemsActions from '../store/actions/budget-items'
 
 const Row = ({ item, navigation }) => {
-  const dispatch = useDispatch()
-  let lastPress = 0
-
   const openBudgetHanlder = (item) => {
     navigation.navigate('BudgetDetail', {
       id: item.id,
       name: item.name,
       amount: item.amount,
     })
-  }
-
-  const editName = (item) => {
-    console.log('edit name')
   }
 
   return (
@@ -54,18 +47,34 @@ const Row = ({ item, navigation }) => {
   )
 }
 
-const SwipeableRow = ({ item, index, nav }) => {
+const SwipeableRow = ({ item, index, nav, onEditBudget, onCloneBudget }) => {
   const dispatch = useDispatch()
 
   return (
-    <AppleStyleSwipeableRow item={item}>
-      <Row dispatch={dispatch} item={item} sender={'budget'} navigation={nav} />
+    <AppleStyleSwipeableRow
+      item={item}
+      onEditBudget={onEditBudget}
+      onCloneBudget={onCloneBudget}
+    >
+      <Row
+        dispatch={dispatch}
+        item={item}
+        sender={'budget'}
+        navigation={nav}
+        onCloneBudget={onCloneBudget}
+      />
     </AppleStyleSwipeableRow>
   )
 }
 
 const HomeScreen = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false)
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [selectedBudget, setSelectedBudget] = useState({
+    id: 0,
+    name: '',
+    amount: '',
+  })
   const dispatch = useDispatch()
 
   const budgets = useSelector((state) => state.budgets.budgets)
@@ -90,7 +99,6 @@ const HomeScreen = ({ navigation }) => {
   }
 
   const updateAmountField = (e, name) => {
-    console.log(e.nativeEvent.text)
     setEnteredBudget({
       ...budget,
       [name]: e.nativeEvent.text.replace(/[- #*;,<>\{\}\[\]\\\/]/gi, ''),
@@ -114,16 +122,46 @@ const HomeScreen = ({ navigation }) => {
     )
   }
 
-  // const openBudgetHanlder = (item) => {
-  //   navigation.navigate('BudgetDetail', {
-  //     id: item.id,
-  //     name: item.name,
-  //     amount: item.amount,
-  //   })
-  // }
+  const updateBudgetHandler = async (budget) => {
+    await dispatch(budgetsActions.updateBudget(budget)).then(() => {
+      setIsEditMode(false)
+    })
+  }
+
+  const editBudgetHandler = (budget) => {
+    setSelectedBudget({
+      id: budget.id,
+      name: budget.name,
+      amount: budget.amount,
+    })
+    setIsEditMode(true)
+  }
+
+  const cloneBudgetHandler = async (budget) => {
+    setIsLoading(true)
+    await dispatch(budgetsActions.cloneBudget(budget)).then(
+      async (newBudget) => {
+        await dispatch(
+          budgetItemsActions.cloneBudgetItems(budget, newBudget)
+        ).then(() => {
+          setIsLoading(false)
+        })
+      }
+    )
+  }
+
+  const cancelEditHandler = () => {
+    setIsEditMode(false)
+  }
 
   return (
     <View style={styles.container}>
+      <EditBudgetModal
+        visible={isEditMode}
+        onUpdateBudget={updateBudgetHandler}
+        onCancelEdit={cancelEditHandler}
+        selectedBudget={selectedBudget}
+      />
       <FlatList
         style={styles.fList}
         data={budgets}
@@ -133,9 +171,12 @@ const HomeScreen = ({ navigation }) => {
             item={itemData.item}
             index={itemData.item.id.toString()}
             nav={navigation}
+            onEditBudget={editBudgetHandler}
+            onCloneBudget={cloneBudgetHandler}
           />
         )}
       />
+
       <View style={styles.inputContainer}>
         <TextInput
           placeholder='Name'

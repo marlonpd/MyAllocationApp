@@ -1,4 +1,9 @@
-import { ADD_BUDGET, SET_BUDGETS, DELETE_BUDGET } from '../actions/budgets'
+import {
+  ADD_BUDGET,
+  SET_BUDGETS,
+  DELETE_BUDGET,
+  UPDATE_BUDGET,
+} from '../actions/budgets'
 import Budget from '../../models/budget'
 
 const initialState = {
@@ -18,10 +23,19 @@ export default (state = initialState, action) => {
         action.budget.name,
         action.budget.amount
       )
-
       return {
         ...state,
         budgets: state.budgets.concat(newBudget),
+      }
+    case UPDATE_BUDGET:
+      const updatedBudgets = state.budgets.map((b) =>
+        b.id === action.budget.id
+          ? { ...b, name: action.budget.name, amount: action.budget.amount }
+          : b
+      )
+      return {
+        ...state,
+        budgets: updatedBudgets,
       }
     case DELETE_BUDGET:
       const budgets = state.budgets.filter((b) => b.id != action.budget.id)

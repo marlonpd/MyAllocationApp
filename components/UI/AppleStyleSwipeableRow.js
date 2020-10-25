@@ -44,12 +44,28 @@ export default class AppleStyleSwipeableRow extends Component {
     const pressHandler = async () => {
       this.close()
       const { dispatch, sender } = this.props.children.props
+      // console.log('before if text', text)
+      // console.log(x)
+      if (text === 'Delete') {
+        if (sender === 'budget')
+          dispatch(await budgetsActions.deleteBudget(this.state.item.id))
 
-      if (sender === 'budget')
-        dispatch(await budgetsActions.deleteBudget(this.state.item.id))
+        if (sender === 'budgetItem')
+          dispatch(
+            await budgetItemsActions.deleteBudgetItem(this.state.item.id)
+          )
+      }
 
-      if (sender === 'budgetItem')
-        dispatch(await budgetItemsActions.deleteBudgetItem(this.state.item.id))
+      if (text === 'Edit') {
+        if (sender === 'budget') this.props.onEditBudget(this.state.item)
+
+        if (sender === 'budgetItem')
+          this.props.children.props.onEditBudgetItem(this.state.item)
+      }
+
+      if (text === 'Clone') {
+        this.props.onCloneBudget(this.state.item)
+      }
     }
     return (
       <Animated.View style={{ flex: 1, transform: [{ translateX: trans }] }}>
@@ -69,7 +85,8 @@ export default class AppleStyleSwipeableRow extends Component {
         flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
       }}
     >
-      {this.renderRightAction('Clone', '#ffab00', 128, progress)}
+      {this.renderRightAction('Clone', '#C8C7CD', 192, progress)}
+      {this.renderRightAction('Edit', '#ffab00', 128, progress)}
       {this.renderRightAction('Delete', '#dd2c00', 64, progress)}
     </View>
   )

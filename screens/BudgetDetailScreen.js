@@ -12,6 +12,7 @@ import {
 import { FlatList, RectButton } from 'react-native-gesture-handler'
 
 import AppleStyleSwipeableRow from '../components/UI/AppleStyleSwipeableRow'
+import EditBudgetItemModal from '../components/UI/EditBudgetItemModal'
 
 import * as budgetItemsActions from '../store/actions/budget-items'
 
@@ -34,12 +35,17 @@ const Row = ({ item }) => {
   )
 }
 
-const SwipeableRow = ({ item, index, nav }) => {
+const SwipeableRow = ({ item, index, nav, onEditBudgetItem }) => {
   const dispatch = useDispatch()
 
   return (
     <AppleStyleSwipeableRow item={item}>
-      <Row dispatch={dispatch} item={item} sender={'budgetItem'} />
+      <Row
+        dispatch={dispatch}
+        item={item}
+        sender={'budgetItem'}
+        onEditBudgetItem={onEditBudgetItem}
+      />
     </AppleStyleSwipeableRow>
   )
 }
@@ -47,6 +53,8 @@ const SwipeableRow = ({ item, index, nav }) => {
 const BudgetDetailScreen = ({ route, navigation }) => {
   const { id } = route.params
   const [isLoading, setIsLoading] = useState(false)
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [selectedBudgetItem, setSelectedBudgetItem] = useState({})
   const budgetItems = useSelector((state) => state.budgetItems.budgetItems)
   const dispatch = useDispatch()
 
@@ -94,8 +102,29 @@ const BudgetDetailScreen = ({ route, navigation }) => {
     })
   }
 
+  const updateBudgetItemHandler = async (budgetItem) => {
+    await dispatch(budgetItemsActions.updateBudgetItem(budgetItem)).then(() => {
+      setIsEditMode(false)
+    })
+  }
+
+  const editBudgetItemHandler = (budgetItem) => {
+    setSelectedBudgetItem(budgetItem)
+    setIsEditMode(true)
+  }
+
+  const cancelEditHandler = () => {
+    setIsEditMode(false)
+  }
+
   return (
     <View style={styles.container}>
+      <EditBudgetItemModal
+        visible={isEditMode}
+        onUpdateBudgetItem={updateBudgetItemHandler}
+        onCancelEdit={cancelEditHandler}
+        selectedBudgetItem={selectedBudgetItem}
+      />
       <FlatList
         style={styles.fList}
         data={budgetItems}
@@ -105,19 +134,8 @@ const BudgetDetailScreen = ({ route, navigation }) => {
             item={itemData.item}
             index={itemData.item.id.toString()}
             nav={navigation}
+            onEditBudgetItem={editBudgetItemHandler}
           />
-          // <View style={styles.listItem}>
-          //   <TouchableOpacity style={styles.itemContainer}>
-          //     <View style={styles.inputWrap}>
-          //       <Text style={styles.listContentLeft}>{itemData.item.name}</Text>
-          //     </View>
-          //     <View style={styles.inputWrap}>
-          //       <Text style={styles.listContentRight}>
-          //         {itemData.item.amount}
-          //       </Text>
-          //     </View>
-          //   </TouchableOpacity>
-          // </View>
         )}
       />
       <View style={styles.inputContainer}>

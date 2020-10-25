@@ -3,6 +3,7 @@ import {
   DELETE_BUDGET_ITEM,
   SET_BUDGET_ITEMS,
   RESET_BUDGET_ITEMS,
+  UPDATE_BUDGET_ITEM,
 } from '../actions/budget-items'
 import BudgetItem from '../../models/budget-item'
 
@@ -31,6 +32,20 @@ export default (state = initialState, action) => {
       return {
         ...state,
         budgetItems: state.budgetItems.concat(newBudgetItem),
+      }
+    case UPDATE_BUDGET_ITEM:
+      const updatedBudgetItems = state.budgetItems.map((b) =>
+        b.id === action.budgetItem.id
+          ? {
+              ...b,
+              name: action.budgetItem.name,
+              amount: action.budgetItem.amount,
+            }
+          : b
+      )
+      return {
+        ...state,
+        budgetItems: updatedBudgetItems,
       }
     case DELETE_BUDGET_ITEM:
       const budgetItems = state.budgetItems.filter(
