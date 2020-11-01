@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "RN Guide",
+    "name": "My Allocation",
     "slug": "my-allocation",
     "privacy": "public",
     "sdkVersion": "36.0.0",
@@ -24,7 +24,17 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "config": {
+        "googleSignIn": {
+          "reservedClientId": "com.googleusercontent.apps.198150416247-q69rc8bpvh8b8tljair9bdvurdaansb0"
+        }
+      },
+      "googleServicesFile": "./GoogleService-Info.plist"
+    },
+    "android": {
+      "package": "com.lonestart.myallocation",
+      "googleServicesFile": "./google-services.json"
     }
   }
 }

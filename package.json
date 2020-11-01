@@ -39,7 +39,9 @@
     "realm": "^6.1.1",
     "redux": "^4.0.4",
     "redux-thunk": "^2.3.0",
-    "uuid": "^8.3.0"
+    "uuid": "^8.3.0",
+    "expo-google-sign-in": "~8.0.0",
+    "expo-app-auth": "~8.0.0"
   },
   "devDependencies": {
     "babel-preset-expo": "^8.0.0",
