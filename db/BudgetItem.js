@@ -21,7 +21,7 @@ export default class BudgetItem extends BaseModel {
       budgetId: { type: types.INTEGER, not_null: true },
       name: { type: types.TEXT, not_null: true },
       amount: { type: types.FLOAT, default: 0 },
-      paid: { type: types.INTEGER, default: 0 },
+      isPaid: { type: types.INTEGER, default: 0 },
     }
   }
 

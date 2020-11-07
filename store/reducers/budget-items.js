@@ -27,7 +27,8 @@ export default (state = initialState, action) => {
         action.budgetItem.userId,
         action.budgetItem.budgetId,
         action.budgetItem.name,
-        action.budgetItem.amount
+        action.budgetItem.amount,
+        action.budgetItem.isPaid
       )
       return {
         ...state,
@@ -40,6 +41,7 @@ export default (state = initialState, action) => {
               ...b,
               name: action.budgetItem.name,
               amount: action.budgetItem.amount,
+              isPaid: action.budgetItem.isPaid,
             }
           : b
       )

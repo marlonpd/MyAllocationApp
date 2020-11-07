@@ -12,7 +12,7 @@ export const fetchBudgetItems = (budgetId) => {
     const userId = getState().auth.userId
     try {
       let options = {
-        columns: 'id, name, amount',
+        columns: 'id, name, amount, isPaid',
         where: {
           budgetId_eq: budgetId,
         },
@@ -24,7 +24,14 @@ export const fetchBudgetItems = (budgetId) => {
 
       for (const item of allBudgetItems) {
         loadedBudgetItems.push(
-          new BudgetItem(item.id, item.userId, budgetId, item.name, item.amount)
+          new BudgetItem(
+            item.id,
+            item.userId,
+            budgetId,
+            item.name,
+            item.amount,
+            item.isPaid
+          )
         )
       }
       dispatch({ type: SET_BUDGET_ITEMS, budgetItems: loadedBudgetItems })
@@ -41,6 +48,30 @@ export const resetBudgetItems = () => {
     } catch (err) {
       throw err
     }
+  }
+}
+
+export const markPaidBudgetItem = (budgetItem) => {
+  return (dispatch, getState) => {
+    return new Promise(async (resolve, reject) => {
+      const token = getState().auth.token
+      const userId = getState().auth.userId
+
+      try {
+        let selectedBudgetItem = await db.BudgetItem.find(budgetItem.id)
+        selectedBudgetItem.isPaid = selectedBudgetItem.isPaid ? 0 : 1
+        selectedBudgetItem.save()
+
+        dispatch({
+          type: UPDATE_BUDGET_ITEM,
+          budgetItem: selectedBudgetItem,
+        })
+
+        resolve(selectedBudgetItem)
+      } catch (err) {
+        reject(err)
+      }
+    })
   }
 }
 
@@ -81,6 +112,7 @@ export const addBudgetItem = (budgetId, name, amount) => {
           budgetId: budgetId,
           name: name,
           amount: amount,
+          isPaid: 0,
         }
 
         let newBudgetItem = new db.BudgetItem(budgetItem)
@@ -94,6 +126,7 @@ export const addBudgetItem = (budgetId, name, amount) => {
             budgetId: newBudgetItem.budgetId,
             name: newBudgetItem.name,
             amount: newBudgetItem.amount,
+            isPaid: 0,
           },
         })
 

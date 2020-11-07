@@ -16,18 +16,31 @@ import EditBudgetItemModal from '../components/UI/EditBudgetItemModal'
 
 import * as budgetItemsActions from '../store/actions/budget-items'
 
-const Row = ({ item }) => {
+const Row = ({ item, budgetAmount }) => {
   return (
     <RectButton style={styles.rectButton}>
       <View style={styles.listItem}>
         <TouchableOpacity style={styles.itemContainer}>
           <View style={styles.inputWrap}>
-            <Text style={styles.listContentLeft}>{item.name}</Text>
+            <Text
+              style={[
+                styles.listContentLeft,
+                item.isPaid ? styles.paidItem : null,
+              ]}
+            >
+              {item.name}
+            </Text>
           </View>
           <View style={styles.inputWrap}>
-            <Text style={styles.listContentRight}>
+            <Text
+              style={[
+                styles.listContentRight,
+                item.isPaid ? styles.paidItem : null,
+              ]}
+            >
               {item.amount.toString()}
             </Text>
+            <Text>{budgetAmount}</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -35,8 +48,25 @@ const Row = ({ item }) => {
   )
 }
 
-const SwipeableRow = ({ item, index, nav, onEditBudgetItem }) => {
+const SwipeableRow = ({
+  item,
+  index,
+  nav,
+  onEditBudgetItem,
+  onMarkPaidBudgetItem,
+  budgetAmount,
+}) => {
   const dispatch = useDispatch()
+
+  console.log('------texst--------')
+  budgetAmount = parseFloat(budgetAmount) - parseFloat(item.amount)
+
+  console.log(budgetAmount)
+  console.log(item.amount)
+
+  console.log(parseFloat(budgetAmount))
+  console.log(parseFloat(item.amount))
+  console.log('============')
 
   return (
     <AppleStyleSwipeableRow item={item}>
@@ -45,17 +75,19 @@ const SwipeableRow = ({ item, index, nav, onEditBudgetItem }) => {
         item={item}
         sender={'budgetItem'}
         onEditBudgetItem={onEditBudgetItem}
+        onMarkPaidBudgetItem={onMarkPaidBudgetItem}
+        budgetAmount={budgetAmount}
       />
     </AppleStyleSwipeableRow>
   )
 }
 
 const BudgetDetailScreen = ({ route, navigation }) => {
-  const { id } = route.params
+  const { id, name, amount } = route.params
   const [isLoading, setIsLoading] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
   const [selectedBudgetItem, setSelectedBudgetItem] = useState({})
-  const budgetItems = useSelector((state) => state.budgetItems.budgetItems)
+  let budgetItems = useSelector((state) => state.budgetItems.budgetItems)
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -64,12 +96,14 @@ const BudgetDetailScreen = ({ route, navigation }) => {
       setIsLoading(false)
     })
 
+    navigation.setOptions({ title: `${name} - ${amount}` })
+
     return () => {
       dispatch(budgetItemsActions.resetBudgetItems()).then(() => {
         setIsLoading(false)
       })
     }
-  }, [dispatch, id])
+  }, [dispatch, id, navigation])
 
   const [budgetItem, setEnteredBudgetItem] = useState({
     id: id,
@@ -108,6 +142,14 @@ const BudgetDetailScreen = ({ route, navigation }) => {
     })
   }
 
+  const onMarkPaidBudgetItemHandler = async (budgetItem) => {
+    await dispatch(budgetItemsActions.markPaidBudgetItem(budgetItem)).then(
+      () => {
+        setIsEditMode(false)
+      }
+    )
+  }
+
   const editBudgetItemHandler = (budgetItem) => {
     setSelectedBudgetItem(budgetItem)
     setIsEditMode(true)
@@ -134,7 +176,9 @@ const BudgetDetailScreen = ({ route, navigation }) => {
             item={itemData.item}
             index={itemData.item.id.toString()}
             nav={navigation}
+            onMarkPaidBudgetItem={onMarkPaidBudgetItemHandler}
             onEditBudgetItem={editBudgetItemHandler}
+            budgetAmount={amount}
           />
         )}
       />
@@ -167,6 +211,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  paidItem: {
+    textDecorationLine: 'line-through',
+    textDecorationStyle: 'solid',
   },
   inputContainer: {
     flexDirection: 'row',

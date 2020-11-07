@@ -63,6 +63,11 @@ export default class AppleStyleSwipeableRow extends Component {
           this.props.children.props.onEditBudgetItem(this.state.item)
       }
 
+      if (text === 'Paid') {
+        console.log('paid')
+        this.props.children.props.onMarkPaidBudgetItem(this.state.item)
+      }
+
       if (text === 'Clone') {
         this.props.onCloneBudget(this.state.item)
       }
@@ -90,6 +95,20 @@ export default class AppleStyleSwipeableRow extends Component {
       {this.renderRightAction('Delete', '#dd2c00', 64, progress)}
     </View>
   )
+
+  renderBudgetItemRightActions = (progress) => (
+    <View
+      style={{
+        width: 192,
+        flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
+      }}
+    >
+      {this.renderRightAction('Paid', '#C8C7CD', 256, progress)}
+      {this.renderRightAction('Clone', '#C8C7CD', 192, progress)}
+      {this.renderRightAction('Edit', '#ffab00', 128, progress)}
+      {this.renderRightAction('Delete', '#dd2c00', 64, progress)}
+    </View>
+  )
   updateRef = (ref) => {
     this._swipeableRow = ref
   }
@@ -98,6 +117,8 @@ export default class AppleStyleSwipeableRow extends Component {
   }
   render() {
     const { children } = this.props
+    const { sender } = this.props.children.props
+
     return (
       <Swipeable
         ref={this.updateRef}
@@ -105,7 +126,11 @@ export default class AppleStyleSwipeableRow extends Component {
         leftThreshold={30}
         rightThreshold={40}
         //  renderLeftActions={this.renderLeftActions}
-        renderRightActions={this.renderRightActions}
+        renderRightActions={
+          sender === 'budget'
+            ? this.renderRightActions
+            : this.renderBudgetItemRightActions
+        }
       >
         {children}
       </Swipeable>

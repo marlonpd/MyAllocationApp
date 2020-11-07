@@ -20,6 +20,7 @@ export default class Budget extends BaseModel {
       userId: { type: types.INTEGER, not_null: true },
       name: { type: types.TEXT, not_null: true },
       amount: { type: types.FLOAT, default: 0 },
+      isArchived: { type: types.INTEGER, default: 0 },
     }
   }
 

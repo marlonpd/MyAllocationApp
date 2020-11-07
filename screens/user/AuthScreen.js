@@ -14,11 +14,12 @@ import { LinearGradient } from 'expo-linear-gradient'
 import { useDispatch } from 'react-redux'
 import * as AppAuth from 'expo-app-auth'
 
+export const isAndroid = () => Platform.OS === 'android'
 import Input from '../../components/UI/Input'
 import Card from '../../components/UI/Card'
 import Colors from '../../constants/Colors'
 import * as authActions from '../../store/actions/auth'
-
+import { Platform } from 'react-native'
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE'
 
 const formReducer = (state, action) => {

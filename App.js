@@ -5,18 +5,18 @@ import { AppLoading } from 'expo'
 import * as Font from 'expo-font'
 import ReduxThunk from 'redux-thunk'
 
-import productsReducer from './store/reducers/products'
-import cartReducer from './store/reducers/cart'
-import ordersReducer from './store/reducers/orders'
+// import productsReducer from './store/reducers/products'
+// import cartReducer from './store/reducers/cart'
+// import ordersReducer from './store/reducers/orders'
 import budgetsReducer from './store/reducers/budgets'
 import budgetItemsReducer from './store/reducers/budget-items'
 import authReducer from './store/reducers/auth'
 import AppNavigator from './navigation/AppNavigator'
 
 const rootReducer = combineReducers({
-  products: productsReducer,
-  cart: cartReducer,
-  orders: ordersReducer,
+  // products: productsReducer,
+  // cart: cartReducer,
+  // orders: ordersReducer,
   budgets: budgetsReducer,
   budgetItems: budgetItemsReducer,
   auth: authReducer,
