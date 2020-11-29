@@ -1,3 +1,5 @@
+import { nanoid } from 'nanoid/async/index.native'
+
 import BudgetItem from '../../models/budget-item'
 import db from '../../db'
 
@@ -105,9 +107,11 @@ export const addBudgetItem = (budgetId, name, amount) => {
     return new Promise(async (resolve, reject) => {
       const token = getState().auth.token
       const userId = getState().auth.userId
+      const uuid = await nanoid()
 
       try {
         let budgetItem = {
+          budgetItemId: uuid,
           userId: userId,
           budgetId: budgetId,
           name: name,
@@ -148,7 +152,7 @@ export const cloneBudgetItems = (oldBudget, newBudget) => {
         let options = {
           columns: 'id, budgetId, name, amount',
           where: {
-            budgetId_eq: oldBudget.id,
+            budgetId_eq: oldBudget.budgetId,
           },
           order: 'id ASC',
         }
@@ -158,7 +162,7 @@ export const cloneBudgetItems = (oldBudget, newBudget) => {
         for (const item of allBudgetItems) {
           let budgetItem = {
             userId: userId,
-            budgetId: newBudget.id,
+            budgetId: newBudget.budgetId,
             name: item.name,
             amount: item.amount,
           }

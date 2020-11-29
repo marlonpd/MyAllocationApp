@@ -20,7 +20,7 @@ import * as budgetItemsActions from '../store/actions/budget-items'
 const Row = ({ item, navigation }) => {
   const openBudgetHanlder = (item) => {
     navigation.navigate('BudgetDetail', {
-      id: item.id,
+      budgetId: item.budgetId,
       name: item.name,
       amount: item.amount,
     })
@@ -71,7 +71,7 @@ const HomeScreen = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
   const [selectedBudget, setSelectedBudget] = useState({
-    id: 0,
+    budgetId: 0,
     name: '',
     amount: '',
   })
@@ -114,7 +114,7 @@ const HomeScreen = ({ navigation }) => {
         })
 
         navigation.navigate('BudgetDetail', {
-          id: newBudget.id,
+          budgetId: newBudget.budgetId,
           name: newBudget.name,
           amount: newBudget.amount,
         })
@@ -130,7 +130,7 @@ const HomeScreen = ({ navigation }) => {
 
   const editBudgetHandler = (budget) => {
     setSelectedBudget({
-      id: budget.id,
+      budgetId: budget.budgetId,
       name: budget.name,
       amount: budget.amount,
     })
@@ -165,14 +165,14 @@ const HomeScreen = ({ navigation }) => {
       <FlatList
         style={styles.fList}
         data={budgets}
-        keyExtractor={(item, index) => item.id.toString()}
+        keyExtractor={(item, index) => item.budgetId}
         renderItem={(itemData) => (
           <SwipeableRow
             item={itemData.item}
-            index={itemData.item.id.toString()}
+            index={itemData.item.budgetId}
             nav={navigation}
-            onEditBudget={editBudgetHandler}
-            onCloneBudget={cloneBudgetHandler}
+            onEditBudget={() => editBudgetHandler(itemData.item)}
+            onCloneBudget={() => cloneBudgetHandler(itemData.item)}
           />
         )}
       />

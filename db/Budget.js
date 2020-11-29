@@ -17,6 +17,7 @@ export default class Budget extends BaseModel {
   static get columnMapping() {
     return {
       id: { type: types.INTEGER, primary_key: true },
+      budgetId: { type: types.TEXT, not_null: true },
       userId: { type: types.INTEGER, not_null: true },
       name: { type: types.TEXT, not_null: true },
       amount: { type: types.FLOAT, default: 0 },

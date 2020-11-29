@@ -40,7 +40,7 @@ const Row = ({ item, budgetAmount }) => {
             >
               {item.amount.toString()}
             </Text>
-            <Text>{budgetAmount}</Text>
+            <Text>remaining: {item.runningBalance}</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -58,16 +58,6 @@ const SwipeableRow = ({
 }) => {
   const dispatch = useDispatch()
 
-  console.log('------texst--------')
-  budgetAmount = parseFloat(budgetAmount) - parseFloat(item.amount)
-
-  console.log(budgetAmount)
-  console.log(item.amount)
-
-  console.log(parseFloat(budgetAmount))
-  console.log(parseFloat(item.amount))
-  console.log('============')
-
   return (
     <AppleStyleSwipeableRow item={item}>
       <Row
@@ -83,7 +73,8 @@ const SwipeableRow = ({
 }
 
 const BudgetDetailScreen = ({ route, navigation }) => {
-  const { id, name, amount } = route.params
+  const { budgetId, name } = route.params
+  let { amount } = route.params
   const [isLoading, setIsLoading] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
   const [selectedBudgetItem, setSelectedBudgetItem] = useState({})
@@ -92,7 +83,7 @@ const BudgetDetailScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     setIsLoading(true)
-    dispatch(budgetItemsActions.fetchBudgetItems(id)).then(() => {
+    dispatch(budgetItemsActions.fetchBudgetItems(budgetId)).then(() => {
       setIsLoading(false)
     })
 
@@ -103,7 +94,22 @@ const BudgetDetailScreen = ({ route, navigation }) => {
         setIsLoading(false)
       })
     }
-  }, [dispatch, id, navigation])
+  }, [dispatch, budgetId, navigation])
+
+  useEffect(() => {
+    budgetItems.map((bi) => {
+      amount = amount - bi.amount
+
+      let newPropsObj = {
+        runningBalance: amount,
+      }
+
+      return Object.assign(bi, newPropsObj)
+    })
+    return () => {
+      budgetItems = []
+    }
+  }, [budgetItems])
 
   const [budgetItem, setEnteredBudgetItem] = useState({
     id: id,

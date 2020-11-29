@@ -19,6 +19,7 @@ export default (state = initialState, action) => {
     case ADD_BUDGET:
       const newBudget = new Budget(
         action.budget.id,
+        action.budget.budgetId,
         action.budget.userId,
         action.budget.name,
         action.budget.amount
@@ -29,7 +30,7 @@ export default (state = initialState, action) => {
       }
     case UPDATE_BUDGET:
       const updatedBudgets = state.budgets.map((b) =>
-        b.id === action.budget.id
+        b.budgetId === action.budget.budgetId
           ? { ...b, name: action.budget.name, amount: action.budget.amount }
           : b
       )
@@ -38,7 +39,9 @@ export default (state = initialState, action) => {
         budgets: updatedBudgets,
       }
     case DELETE_BUDGET:
-      const budgets = state.budgets.filter((b) => b.id != action.budget.id)
+      const budgets = state.budgets.filter(
+        (b) => b.budgetId != action.budget.budgetId
+      )
       return {
         ...state,
         budgets: budgets,
